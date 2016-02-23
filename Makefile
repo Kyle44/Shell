@@ -1,4 +1,4 @@
-SRCS = main.c shellFunctions.c
+SRCS = main.c
 OBJS = $(SRCS:.c=.o)
 BIN = shell
 CFLAGS = -g
