@@ -17,3 +17,4 @@ $(BIN): $(OBJS)
 clean:
 	-rm -f $(OBJS)
 	-rm -f $(BIN)
+	-rm -f a.out
