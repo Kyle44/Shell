@@ -1,5 +1,5 @@
 // Name: Kyle Fritz
-// File: main.c
+// File: shellFunctions.c
 // Date Created: 2/20/16
 // Description: Functionality for main shell.
 
