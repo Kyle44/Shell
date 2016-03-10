@@ -1,28 +1,50 @@
 // Name: Kyle Fritz
 // File: main.c
 // Date Created: 2/20/16
-// Description: main file for my own shell
+// Description: Functionality for main shell.
 
+#include <sys/wait.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 #define BUFFER_SIZE 1024
 #define TOKEN_BUFFER_SIZE 64
-#define TOKEN_DELIM " /t/r/n/a"
+#define TOKEN_DELIM " "
 
-int startProgram(char** args){
+
+int execute(char** args){
+	if(args[0] == NULL){
+                return 1;  // Nothing entered, so return to command prompt
+        }
+	return launch(args);
+}
+
+int launch(char** args){
 	pid_t pid, wpid;
 	int status;
 	
 	pid = fork();
-	if(pid == 0){
-//		if(execl
+	if(pid == 0){   // Child Process
+		execv(args[0], args);
+		// If execv returns, it failed	
+		perror("Child Process Error");
+		exit(EXIT_FAILURE);
+	}
+	
+	else if(pid<0){
+		perror("Error forking");
+	}
 
-
-
-
-
-}
+	else{  // Parent Process
+		do{
+			wpid = waitpid(pid, &status, WUNTRACED);  // Wait for process's status to change
+		} while(!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+	
+	return 1;
+}	
 
 char* readLine(){
 	int currentBufferSize = BUFFER_SIZE;
@@ -62,21 +84,21 @@ char* readLine(){
 char** splitLine(char* line){
 	int currentTokenBufferSize = TOKEN_BUFFER_SIZE;
 	int position = 0;
-	char** tokens = malloc(currentTokenBufferSize * sizeof(char*));
+	char** tokens = malloc(currentTokenBufferSize * sizeof(char*));  // Allocate for each token
 	char* token;
+	char* saveptr;
 
 	if(!tokens){
 		fprintf(stderr, "Token Allocation Error\n");
 		exit(EXIT_FAILURE);
 	}
 
-	token = strtok(line, TOKEN_DELIM);
+	token = strtok_r(line, TOKEN_DELIM, &saveptr);  // Splits up the tokens by spaces and other inputs
 	while (token != NULL){
 		tokens[position] = token;
 		position++;
 	
 		if(position >= currentTokenBufferSize){
-
 			currentTokenBufferSize += TOKEN_BUFFER_SIZE;
 			tokens = realloc(tokens, currentTokenBufferSize * sizeof(char*));
 			if(!tokens){
@@ -84,10 +106,8 @@ char** splitLine(char* line){
 				exit(EXIT_FAILURE);
 			}
 		}
-		token = strtok(NULL, TOKEN_DELIM);
+		token = strtok_r(NULL, TOKEN_DELIM, &saveptr);
 	}
 	tokens[position] = NULL;
 	return tokens;
 }
-
-
