@@ -1,25 +1,28 @@
 // Name: Kyle Fritz
 // File: shellFunctions.c
 // Date Created: 2/20/16
-// Description: Functionality for main shell.
+// Description: Functionality for main shell
 
-#include <sys/wait.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#define BUFFER_SIZE 1024
-#define TOKEN_BUFFER_SIZE 64
-#define TOKEN_DELIM " "
+#include "builtinFuncs.c"
 
 
 int execute(char** args){
-	if(args[0] == NULL){
+        if(args[0] == NULL){
                 return 1;  // Nothing entered, so return to command prompt
         }
-	return launch(args);
+
+        char* builtinCommands[] = {"exit", "chdir", "cd", "getenv", "setebv", "echo"};
+        int (*builtinFunctions[]) (char **) = {&exit, &chdir, &cd, &getenv, &setenv, &echo};
+        int numCommands = sizeof(builtinCommands) / sizeof(char*);
+
+
+        if(exit(args) == 1){
+                return 1;
+        }
+
+        return launch(args);
 }
+
 
 int launch(char** args){
 	pid_t pid, wpid;
