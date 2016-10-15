@@ -1,0 +1,1 @@
+My own shell that supports comments with #, reads scripts, executes programs, and launches/executes any arguments given (i.e. ls, pwd, cd, echo, vim, less, make). Has errors sometimes involving child and parent forking.
