@@ -6,7 +6,6 @@
 #include "utils.c"
 
 
-
 int exitFunc(char** args){
     int numArgs = getNumArgs(args);
 
@@ -155,4 +154,3 @@ int echoFunc(char** args){
     }
     return 1;
 }
-
