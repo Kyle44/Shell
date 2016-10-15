@@ -27,13 +27,84 @@
     POSSIBILITY OF SUCH DAMAGE.
 */
 
+typedef int bool;
+#define true 1
+#define false 0
+
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-
+#include <sys/wait.h>
+#include <unistd.h> // getuid(void)
+#include <sys/types.h>
+#include <pwd.h> // getpwuid(uid_t uid)
+#define STR_BUFFER_SIZE 30
+#define BUFFER_SIZE 1024
+#define TOKEN_BUFFER_SIZE 64
+#define TOKEN_DELIM " "
 #include "utils.h"
+
+
+int checkForProfile(){
+    struct passwd* pass = getpwuid(getuid()); // get the userid and password to get HOME dir
+    char* homeDir = pass->pw_dir; // get HOME dir
+    const char* profile = strcat(homeDir, "/.421sh_profile"); // concatenate for fopen
+
+    FILE* file;
+    if(file = fopen(profile, "r")) {
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+void writeToHistory(char* line){
+    struct passwd* pass = getpwuid(getuid()); // get the userid and password to get HOME dir
+    char* homeDir = pass->pw_dir; // get HOME dir
+    const char* hist = strcat(homeDir, "/.421sh_history"); // concatenate for fopen
+
+    FILE* file; // 
+    file = fopen(hist, "a+"); // append to .421sh_history
+    fputs(line, file); // append to end of file
+    fputc('\n', file);
+
+    fclose(file);
+}
+
+void printString(char* str){
+    printf("Printing string... \n");
+    int i = 0;
+    while(str[i] != '\0'){
+        printf("%c\n", str[i]);
+        i++;
+    }
+}
+
+void printArray(char** array){
+    printf("Printing array... \n");
+    int i = 0;
+    while(array[i] != NULL){
+        printf("%s\n", array[i]);
+        i++;
+    }
+}
+
+void printNumArgs(char** args){
+    int numArgs = getNumArgs(args);
+    printf("Number of argument given: %d\n", numArgs);
+}
+
+int getNumArgs(char** args){ // get total number of arguments
+    int i = 0;
+    while(args[i] != NULL){
+        i++;
+    }
+    return i;
+}
+
 
 size_t count_spaces(const char *str) {
     size_t rv = 0;
